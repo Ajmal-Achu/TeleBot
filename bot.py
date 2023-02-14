@@ -1,72 +1,30 @@
-import os
-import requests
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-# Create a Pyrogram client object
+import pyrogram
+from pyrogram import Client, Filters
 
 api_id=27063178
 api_hash="82937245474af5065ab0f857e772aad8"
 bot_token="5910218382:AAHqe2wBnNX6ET0xqoiiniqzwuQwrrUPaZY"
 app = Client("my_account", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-# Define a start message
-start_message = """
-Welcome to the Instagram Downloader Bot!
-To use this bot, simply send me a link to an Instagram post or story.
-"""
+@app.on_message(Filters.command("start"))
+def start(client, message):
+    message.reply_text("Hello! I'm an Instagram Downloader Bot. Please send me the link of the Instagram post you want to download.")
 
-# Define a function to handle incoming messages
-@app.on_message(filters.private & filters.text)
-def handle_message(client, message):
-    # Check if the message contains an Instagram link
-    if "instagram.com" in message.text:
-        # Create a keyboard with download options
-        keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton("Download Post", callback_data="post")],
-            [InlineKeyboardButton("Download Story", callback_data="story")]
-        ])
-        # Send a message with the keyboard
-        message.reply_text("Select an option:", reply_markup=keyboard)
-    else:
-        # Send a message with the start message
-        message.reply_text(start_message)
+    
+@app.on_message(Filters.regex('^https://www\.instagram\.com/p/.+'))
+def download(client, message):
 
-# Define a function to handle button clicks
-@app.on_callback_query()
-def handle_button(client, callback_query):
-    # Get the download option from the button
-    option = callback_query.data
-    # Get the Instagram link from the original message
-    message = callback_query.message.reply_to_message
-    link = message.text
-    # Download the media based on the option
-    if option == "post":
-        # Download the post image or video
-        url = f"https://www.instagram.com/p/{link.split('/')[-2]}/?__a=1"
-        response = requests.get(url)
-        media_url = response.json()["graphql"]["shortcode_media"]["display_url"]
-        filename = media_url.split("/")[-1]
-        response = requests.get(media_url)
-        with open(filename, "wb") as f:
-            f.write(response.content)
-        # Send the downloaded media
-        message.reply_photo(filename)
-        # Delete the file
-        os.remove(filename)
-    elif option == "story":
-        # Download the story image or video
-        url = f"https://www.instagram.com/stories/{link.split('/')[-2]}/?__a=1"
-        response = requests.get(url)
-        media_url = response.json()["graphql"]["user"]["reel"]["items"][0]["display_url"]
-        filename = media_url.split("/")[-1]
-        response = requests.get(media_url)
-        with open(filename, "wb") as f:
-            f.write(response.content)
-        # Send the downloaded media
-        message.reply_photo(filename)
-        # Delete the file
-        os.remove(filename)
+    # Extracting the post URL from the message 
+    post_url = message.text
 
-# Start the Pyrogram client
+    # Generating a download button with the post URL 
+    btn = pyrogram.InlineKeyboardButton('Download', url=post_url)
+
+    # Generating a keyboard with the button 
+    keyboard = pyrogram.InlineKeyboardMarkup([[btn]])
+
+    # Sending a message with the keyboard 
+    message.reply_text("Here's your download link:", reply_markup=keyboard)
+
+    
 app.run()
