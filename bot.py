@@ -4,7 +4,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Create a Pyrogram client object
-app = Client("instagram_downloader_bot")
+app = Client("5910218382:AAHqe2wBnNX6ET0xqoiiniqzwuQwrrUPaZY")
 
 # Define a start message
 start_message = """
