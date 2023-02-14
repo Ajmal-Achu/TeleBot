@@ -4,7 +4,11 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Create a Pyrogram client object
-app = Client("5910218382:AAHqe2wBnNX6ET0xqoiiniqzwuQwrrUPaZY")
+
+api_id=27063178
+api_hash="82937245474af5065ab0f857e772aad8"
+bot_token="5910218382:AAHqe2wBnNX6ET0xqoiiniqzwuQwrrUPaZY"
+app = Client("my_account", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 # Define a start message
 start_message = """
